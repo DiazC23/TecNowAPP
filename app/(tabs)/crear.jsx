@@ -1,8 +1,11 @@
+import { Colors, FontSizes, Layout } from '@/constants/theme';
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
     ActivityIndicator,
     Alert,
+    KeyboardAvoidingView,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -20,7 +23,6 @@ export default function CrearScreen() {
   const { user } = useAuth();
   const router = useRouter();
 
-  // Si está bloqueado no puede crear
   if (!user?.activo) {
     return (
       <View style={styles.bloqueado}>
@@ -53,78 +55,118 @@ export default function CrearScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.label}>Título</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Escribe el título..."
-        placeholderTextColor="#6b7280"
-        value={titulo}
-        onChangeText={setTitulo}
-      />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.label}>Título</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Escribe el título..."
+            placeholderTextColor={Colors.dark.textDisabled}
+            value={titulo}
+            onChangeText={setTitulo}
+          />
 
-      <Text style={styles.label}>Contenido</Text>
-      <TextInput
-        style={[styles.input, styles.textarea]}
-        placeholder="¿Qué quieres compartir?"
-        placeholderTextColor="#6b7280"
-        value={contenido}
-        onChangeText={setContenido}
-        multiline
-        numberOfLines={6}
-        textAlignVertical="top"
-      />
+          <Text style={styles.label}>Contenido</Text>
+          <TextInput
+            style={[styles.input, styles.textarea]}
+            placeholder="¿Qué quieres compartir?"
+            placeholderTextColor={Colors.dark.textDisabled}
+            value={contenido}
+            onChangeText={setContenido}
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+          />
 
-      <TouchableOpacity
-        style={styles.boton}
-        onPress={handleCrear}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.botonTexto}>Publicar</Text>
-        )}
-      </TouchableOpacity>
-    </ScrollView>
+          <TouchableOpacity
+            style={styles.boton}
+            onPress={handleCrear}
+            disabled={loading}
+            activeOpacity={0.85}
+          >
+            {loading ? (
+              <ActivityIndicator color={Colors.light.surface} />
+            ) : (
+              <Text style={styles.botonTexto}>Publicar</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#111827" },
-  content: { padding: 20 },
-  label: { color: "#9ca3af", fontSize: 13, marginBottom: 6, marginTop: 16 },
-  input: {
-    backgroundColor: "#1f2937",
-    color: "#fff",
-    borderRadius: 10,
-    padding: 14,
-    fontSize: 15,
+  container: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  },
+  content: {
+    padding: Layout.spacing.md,
+  },
+  card: {
+    backgroundColor: Colors.light.surface,
+    borderRadius: Layout.radius.large,
+    padding: Layout.spacing.lg,
     borderWidth: 1,
-    borderColor: "#374151",
+    borderColor: Colors.light.border,
+    ...Layout.shadow.default,
   },
-  textarea: { height: 140, textAlignVertical: "top" },
+  label: {
+    color: Colors.light.textSecondary,
+    fontSize: FontSizes.label,
+    marginBottom: 6,
+    marginTop: 16,
+  },
+  input: {
+    backgroundColor: Colors.light.card,
+    color: Colors.light.text,
+    borderRadius: Layout.radius.medium,
+    padding: Layout.spacing.md,
+    fontSize: FontSizes.body,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+  },
+  textarea: {
+    minHeight: 140,
+    textAlignVertical: "top",
+  },
   boton: {
-    backgroundColor: "#1e40af",
-    borderRadius: 10,
-    padding: 16,
+    backgroundColor: Colors.light.primary,
+    borderRadius: Layout.radius.medium,
+    padding: Layout.spacing.md,
     alignItems: "center",
-    marginTop: 24,
+    marginTop: Layout.spacing.lg,
   },
-  botonTexto: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  botonTexto: {
+    color: Colors.light.surface,
+    fontWeight: "700",
+    fontSize: FontSizes.button,
+  },
   bloqueado: {
     flex: 1,
-    backgroundColor: "#111827",
+    backgroundColor: Colors.light.background,
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
   },
-  bloqueadoIcon: { fontSize: 48, marginBottom: 16 },
+  bloqueadoIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
   bloqueadoTitulo: {
-    color: "#f87171",
+    color: Colors.light.error,
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
   },
-  bloqueadoTexto: { color: "#6b7280", textAlign: "center", fontSize: 14 },
+  bloqueadoTexto: {
+    color: Colors.light.textSecondary,
+    textAlign: "center",
+    fontSize: FontSizes.body,
+  },
 });
